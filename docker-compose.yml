@@ -1,0 +1,119 @@
+version: "3.8"
+
+services:
+  # User Service
+  user-service:
+    build:
+      context: ./user-service
+    container_name: user-service
+    ports:
+      - "8001:80" # Expose on port 8001
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres-db/user_db
+    depends_on:
+      - postgres-db # Ensure DB is ready before starting the service
+    networks:
+      - app-network
+    restart: always
+
+  # Post Service
+  post-service:
+    build:
+      context: ./post-service
+    container_name: post-service
+    ports:
+      - "8002:80" # Expose on port 8002
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres-db/post_db
+    depends_on:
+      - postgres-db # Ensure DB is ready before starting the service
+    networks:
+      - app-network
+    restart: always
+
+  # Comment Service
+  comment-service:
+    build:
+      context: ./comment-service
+    container_name: comment-service
+    ports:
+      - "8003:80" # Expose on port 8003
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres-db/comment_db
+    depends_on:
+      - postgres-db # Ensure DB is ready before starting the service
+    networks:
+      - app-network
+    restart: always
+
+  # Gateway API
+  gateway-api:
+    build:
+      context: ./gateway-api
+    container_name: gateway-api
+    ports:
+      - "8000:80" # Expose on port 8000
+    environment:
+      - USER_SERVICE_URL=http://user-service:80
+      - POST_SERVICE_URL=http://post-service:80
+      - COMMENT_SERVICE_URL=http://comment-service:80
+    depends_on:
+      - user-service
+      - post-service
+      - comment-service
+    networks:
+      - app-network
+    restart: always
+
+  # Message Broker (Kafka)
+  message-broker:
+    image: wurstmeister/kafka:latest
+    container_name: message-broker
+    environment:
+      - KAFKA_ADVERTISED_LISTENER=PLAINTEXT://message-broker:9093
+      - KAFKA_LISTENER_SECURITY_PROTOCOL=PLAINTEXT
+      - KAFKA_LISTENER_PORT=9093
+      - KAFKA_LISTENER_NAME=PLAINTEXT
+      - KAFKA_LISTENER_INTERNAL=PLAINTEXT://message-broker:9092
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+    ports:
+      - "9093:9093"
+    networks:
+      - app-network
+    restart: always
+
+  # Zookeeper (Required for Kafka)
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: zookeeper
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+    ports:
+      - "2181:2181"
+    networks:
+      - app-network
+    restart: always
+
+  # PostgreSQL Database
+  postgres-db:
+    image: postgres:13
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: main_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
