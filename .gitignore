@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -80,7 +79,7 @@ secrets.yaml
 *.pem
 *.key
 *.crt
-=======
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -162,4 +161,3 @@ secrets.yaml
 *.pem
 *.key
 *.crt
->>>>>>> 689de75e8ff5815bdf7b5bd03fa940173ee7c777
