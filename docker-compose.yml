@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   # User Service
   user-service:
@@ -7,11 +5,11 @@ services:
       context: ./user-service
     container_name: user-service
     ports:
-      - "8001:80" # Expose on port 8001
+      - "8001:80"
     environment:
-      - DATABASE_URL=postgresql://user:password@postgres-db/user_db
+      - DATABASE_URL=postgresql://user:password@postgres-db:5432/user_db
     depends_on:
-      - postgres-db # Ensure DB is ready before starting the service
+      - postgres-db
     networks:
       - app-network
     restart: always
@@ -22,11 +20,11 @@ services:
       context: ./post-service
     container_name: post-service
     ports:
-      - "8002:80" # Expose on port 8002
+      - "8002:80"
     environment:
-      - DATABASE_URL=postgresql://user:password@postgres-db/post_db
+      - DATABASE_URL=postgresql://user:password@postgres-db:5432/post_db
     depends_on:
-      - postgres-db # Ensure DB is ready before starting the service
+      - postgres-db
     networks:
       - app-network
     restart: always
@@ -37,11 +35,11 @@ services:
       context: ./comment-service
     container_name: comment-service
     ports:
-      - "8003:80" # Expose on port 8003
+      - "8003:80"
     environment:
-      - DATABASE_URL=postgresql://user:password@postgres-db/comment_db
+      - DATABASE_URL=postgresql://user:password@postgres-db:5432/comment_db
     depends_on:
-      - postgres-db # Ensure DB is ready before starting the service
+      - postgres-db
     networks:
       - app-network
     restart: always
@@ -52,7 +50,7 @@ services:
       context: ./gateway-api
     container_name: gateway-api
     ports:
-      - "8000:80" # Expose on port 8000
+      - "8000:80"
     environment:
       - USER_SERVICE_URL=http://user-service:80
       - POST_SERVICE_URL=http://post-service:80
@@ -65,45 +63,46 @@ services:
       - app-network
     restart: always
 
-  # Message Broker (Kafka)
+  # Kafka Broker
   message-broker:
     image: wurstmeister/kafka:latest
     container_name: message-broker
     environment:
-      - KAFKA_ADVERTISED_LISTENER=PLAINTEXT://message-broker:9093
-      - KAFKA_LISTENER_SECURITY_PROTOCOL=PLAINTEXT
-      - KAFKA_LISTENER_PORT=9093
-      - KAFKA_LISTENER_NAME=PLAINTEXT
-      - KAFKA_LISTENER_INTERNAL=PLAINTEXT://message-broker:9092
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      KAFKA_BROKER_ID: 1
+      KAFKA_CREATE_TOPICS: "user-events:1:1,post-events:1:1,comment-events:1:1"
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://message-broker:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     ports:
       - "9093:9093"
     networks:
       - app-network
+    depends_on:
+      - zookeeper
     restart: always
 
-  # Zookeeper (Required for Kafka)
+  # Zookeeper (for Kafka)
   zookeeper:
     image: wurstmeister/zookeeper:latest
     container_name: zookeeper
     environment:
-      - ZOOKEEPER_CLIENT_PORT=2181
+      ZOOKEEPER_CLIENT_PORT: 2181
     ports:
       - "2181:2181"
     networks:
       - app-network
     restart: always
 
-  # PostgreSQL Database
+  # PostgreSQL
   postgres-db:
     image: postgres:13
     container_name: postgres-db
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: main_db
+      POSTGRES_USER: blogUser123
+      POSTGRES_PASSWORD: blogUser123@@
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - /init.sql:/docker-entrypoint-initsql.d
     ports:
       - "5432:5432"
     networks:

@@ -1,10 +1,10 @@
-User Service: http://localhost:8001
+User Service: http://localhost:8001/docs
 
-Post Service: http://localhost:8002
+Post Service: http://localhost:8002/docs
 
-Comment Service: http://localhost:8003
+Comment Service: http://localhost:8003/docs
 
-Gateway API: http://localhost:8000
+Gateway API: http://localhost:8000/docs
 
 
 
@@ -30,7 +30,7 @@ Securely stores application secrets and configurations, such as database credent
 Azure Container Registry (ACR):
 Stores container images for deployment in AKS.
 
-CI/CD Pipeline:
+CI/CD Pipeline(github actions workflow & azure devops pipeline eother one can be used ):
 Automates the building, testing, and deployment of the application from code repository to AKS cluster.
 
 Monitoring and Observability:

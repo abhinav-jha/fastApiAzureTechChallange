@@ -1,4 +1,4 @@
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+from azure.storage.blob import BlobServiceClient
 from dotenv import load_dotenv
 from pathlib import Path
 import os
