@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Ignore Git metadata
 .git
 .gitignore
@@ -31,3 +32,38 @@ dist/
 
 # Ignore Docker-related files that shouldn't be in the image
 docker-compose.override.yml
+=======
+# Ignore Git metadata
+.git
+.gitignore
+
+# Ignore local dev environment
+venv/
+.env
+.env.*
+__pycache__/
+*.py[cod]
+
+# Ignore test artifacts
+*.log
+*.sqlite3
+*.db
+coverage.xml
+*.cover
+.pytest_cache/
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+
+# Ignore build artifacts
+build/
+dist/
+*.egg-info/
+
+# Ignore OS files
+.DS_Store
+
+# Ignore Docker-related files that shouldn't be in the image
+docker-compose.override.yml
+>>>>>>> 689de75e8ff5815bdf7b5bd03fa940173ee7c777
