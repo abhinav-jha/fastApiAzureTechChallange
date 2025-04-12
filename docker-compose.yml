@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   # User Service
   user-service:
@@ -6,10 +8,10 @@ services:
     container_name: user-service
     ports:
       - "8001:80"
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=postgresql://user:password@postgres-db:5432/user_db
-    depends_on:
-      - postgres-db
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_SERVER_LOCAL}:${POSTGRES_PORT}/${POSTGRES_DB_USERSERVICE}
     networks:
       - app-network
     restart: always
@@ -22,9 +24,7 @@ services:
     ports:
       - "8002:80"
     environment:
-      - DATABASE_URL=postgresql://user:password@postgres-db:5432/post_db
-    depends_on:
-      - postgres-db
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_SERVER}:${POSTGRES_PORT}/post_db
     networks:
       - app-network
     restart: always
@@ -37,9 +37,7 @@ services:
     ports:
       - "8003:80"
     environment:
-      - DATABASE_URL=postgresql://user:password@postgres-db:5432/comment_db
-    depends_on:
-      - postgres-db
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_SERVER}:${POSTGRES_PORT}/comment_db
     networks:
       - app-network
     restart: always
@@ -93,26 +91,6 @@ services:
       - app-network
     restart: always
 
-  # PostgreSQL
-  postgres-db:
-    image: postgres:13
-    container_name: postgres-db
-    environment:
-      POSTGRES_USER: blogUser123
-      POSTGRES_PASSWORD: blogUser123@@
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-      - /init.sql:/docker-entrypoint-initsql.d
-    ports:
-      - "5432:5432"
-    networks:
-      - app-network
-    restart: always
-
 networks:
   app-network:
     driver: bridge
-
-volumes:
-  postgres-data:
-    driver: local

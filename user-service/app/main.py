@@ -2,9 +2,12 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from . import crud, models, schemas
 from .db import session
+from app.db.init_db import init
 
 app = FastAPI()
 
+
+init()
 
 @app.post("/users/", response_model=schemas.UserResponse)
 def create_user(user: schemas.UserCreate, db: Session = Depends(session.get_db)):
