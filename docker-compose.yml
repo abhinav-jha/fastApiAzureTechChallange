@@ -1,6 +1,50 @@
 version: '3.8'
 
 services:
+  # Zookeeper (for Kafka)
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+    networks:
+      - app-network
+    restart: always
+
+  # Kafka Broker
+  kafka:
+    image: wurstmeister/kafka:latest
+    container_name: kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    ports:
+      - "9092:9092"
+    networks:
+      - app-network
+    depends_on:
+      - zookeeper
+    restart: always
+
+  # Kafka Microservice (Topic Manager, Consumer/Producer logic)
+  kafka-service:
+    build:
+      context: ./kafka-service
+    container_name: kafka-service
+    environment:
+      - KAFKA_SERVER=kafka:9092
+    ports:
+      - "8003:8003"
+    depends_on:
+      - kafka
+    networks:
+      - app-network
+    restart: always
+
   # User Service
   user-service:
     build:
@@ -12,8 +56,11 @@ services:
       - .env
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_SERVER_LOCAL}:${POSTGRES_PORT}/${POSTGRES_DB_USERSERVICE}
+      - KAFKA_SERVER=kafka:9092
     networks:
       - app-network
+    depends_on:
+      - kafka
     restart: always
 
   # Post Service
@@ -23,23 +70,15 @@ services:
     container_name: post-service
     ports:
       - "8002:80"
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_SERVER}:${POSTGRES_PORT}/post_db
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_SERVER_LOCAL}:${POSTGRES_PORT}/${POSTGRES_DB_POSTSERVICE}
+      - KAFKA_SERVER=kafka:9092
     networks:
       - app-network
-    restart: always
-
-  # Comment Service
-  comment-service:
-    build:
-      context: ./comment-service
-    container_name: comment-service
-    ports:
-      - "8003:80"
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_SERVER}:${POSTGRES_PORT}/comment_db
-    networks:
-      - app-network
+    depends_on:
+      - kafka
     restart: always
 
   # Gateway API
@@ -52,41 +91,9 @@ services:
     environment:
       - USER_SERVICE_URL=http://user-service:80
       - POST_SERVICE_URL=http://post-service:80
-      - COMMENT_SERVICE_URL=http://comment-service:80
     depends_on:
       - user-service
       - post-service
-      - comment-service
-    networks:
-      - app-network
-    restart: always
-
-  # Kafka Broker
-  message-broker:
-    image: wurstmeister/kafka:latest
-    container_name: message-broker
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_CREATE_TOPICS: "user-events:1:1,post-events:1:1,comment-events:1:1"
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://message-broker:9093
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-    ports:
-      - "9093:9093"
-    networks:
-      - app-network
-    depends_on:
-      - zookeeper
-    restart: always
-
-  # Zookeeper (for Kafka)
-  zookeeper:
-    image: wurstmeister/zookeeper:latest
-    container_name: zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-    ports:
-      - "2181:2181"
     networks:
       - app-network
     restart: always
