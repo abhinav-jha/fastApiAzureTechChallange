@@ -69,6 +69,33 @@ Post Service: http://localhost:8002/docs
 Comment Service: http://localhost:8003/docs
 
 Gateway API: http://localhost:8000/docs
+
+
+
+
+
+.
+├── docker-compose.yml          # Docker Compose file for all services
+├── gateway-api                 # FastAPI Gateway Service
+│   ├── main.py                 # FastAPI main app for routing
+│   ├── Dockerfile              # Dockerfile for Gateway Service
+│   ├── requirements.txt        # Dependencies for Gateway Service
+├── kafka-service               # Kafka consumer/producer logic
+│   ├── main.py                 # Kafka consumer/producer logic
+│   ├── Dockerfile              # Dockerfile for Kafka service
+│   ├── requirements.txt        # Dependencies for Kafka service
+├── post-service                # Post microservice
+│   ├── main.py                 # FastAPI app for handling posts
+│   ├── Dockerfile              # Dockerfile for Post Service
+│   ├── requirements.txt        # Dependencies for Post Service
+├── user-service                # User microservice
+│   ├── main.py                 # FastAPI app for handling users
+│   ├── Dockerfile              # Dockerfile for User Service
+│   ├── requirements.txt        # Dependencies for User Service
+├── zookeeper                   # Zookeeper container required by Kafka
+├── .env                        # Environment variables for services
+└── README.md                   # This README file
+
 ________________________________________________________
 
 
