@@ -9,7 +9,7 @@ app = FastAPI()
 
 init()
 
-@app.post("/users/", response_model=schemas.UserResponse)
+@app.post("/users/create", response_model=schemas.UserResponse)
 def create_user(user: schemas.UserCreate, db: Session = Depends(session.get_db)):
     return crud.create_user(db=db, user=user)
 

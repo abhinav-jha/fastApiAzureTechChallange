@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from config import USER_SERVICE_URL, POST_SERVICE_URL  # Import URLs from config
+from .config import USER_SERVICE_URL, POST_SERVICE_URL  # Import URLs from config
 import httpx
 
 app = FastAPI()

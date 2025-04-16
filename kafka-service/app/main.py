@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from topics import create_all_topics
+from app.kafka_topics import create_all_topics
 
 app = FastAPI()
 

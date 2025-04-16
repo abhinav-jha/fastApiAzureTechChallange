@@ -1,7 +1,10 @@
 from kafka.admin import KafkaAdminClient, NewTopic
 from kafka.errors import TopicAlreadyExistsError
-from topics.user_topics import get_user_topics
-from topics.post_topics import get_post_topics
+# from app.topics.user_topics import get_user_topics
+# from app.topics.post_topics import get_post_topics
+from .topics.user_topics import get_user_topics
+from .topics.post_topics import get_post_topics
+
 
 KAFKA_SERVER = "kafka:9092"  # Change if needed
 

@@ -30,7 +30,7 @@ services:
       - zookeeper
     restart: always
 
-  # Kafka Microservice (Topic Manager, Consumer/Producer logic)
+  # Kafka Microservice
   kafka-service:
     build:
       context: ./kafka-service
@@ -89,8 +89,8 @@ services:
     ports:
       - "8000:80"
     environment:
-      - USER_SERVICE_URL=http://user-service:80
-      - POST_SERVICE_URL=http://post-service:80
+      - USER_SERVICE_URL=http://user-service:8001
+      - POST_SERVICE_URL=http://post-service:8002
     depends_on:
       - user-service
       - post-service
