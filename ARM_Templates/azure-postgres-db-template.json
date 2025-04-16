@@ -1,0 +1,49 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "postgresqlServerName": {
+        "type": "string"
+      },
+      "location": {
+        "type": "string"
+      },
+      "adminUsername": {
+        "type": "string"
+      },
+      "adminPassword": {
+        "type": "securestring"
+      },
+      "skuName": {
+        "type": "string",
+        "defaultValue": "Standard_D2s_v3"
+      }
+    },
+    "resources": [
+      {
+        "type": "Microsoft.DBforPostgreSQL/flexibleServers",
+        "apiVersion": "2022-01-20-preview",
+        "name": "[parameters('postgresqlServerName')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "administratorLogin": "[parameters('adminUsername')]",
+          "administratorLoginPassword": "[parameters('adminPassword')]",
+          "storage": {
+            "storageSizeGB": 32
+          },
+          "version": "14",
+          "network": {
+            "delegatedSubnetResourceId": "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/virtualNetworks/{vnetName}/subnets/{subnetName}",
+            "privateDnsZoneArmResourceId": null
+          }
+        },
+        "sku": {
+          "name": "[parameters('skuName')]",
+          "tier": "GeneralPurpose",
+          "capacity": 2,
+          "family": "Gen5"
+        }
+      }
+    ]
+  }
+  

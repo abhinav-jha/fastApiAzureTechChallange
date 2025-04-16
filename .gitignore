@@ -162,5 +162,5 @@ secrets.yaml
 *.pem
 *.key
 *.crt
-/ARM_Templates/
-ARM_Templates
+# /ARM_Templates/
+# ARM_Templates

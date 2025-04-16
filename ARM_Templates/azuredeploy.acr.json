@@ -1,0 +1,48 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "acrName": {
+        "type": "string",
+        "defaultValue": "fastapiacr"
+      },
+      "location": {
+        "type": "string",
+        "defaultValue": "[resourceGroup().location]"
+      },
+      "sku": {
+        "type": "string",
+        "defaultValue": "Basic",
+        "allowedValues": [
+          "Basic",
+          "Standard",
+          "Premium"
+        ]
+      },
+      "adminUserEnabled": {
+        "type": "bool",
+        "defaultValue": true
+      }
+    },
+    "resources": [
+      {
+        "type": "Microsoft.ContainerRegistry/registries",
+        "apiVersion": "2023-01-01-preview",
+        "name": "[parameters('acrName')]",
+        "location": "[parameters('location')]",
+        "sku": {
+          "name": "[parameters('sku')]"
+        },
+        "properties": {
+          "adminUserEnabled": "[parameters('adminUserEnabled')]"
+        }
+      }
+    ],
+    "outputs": {
+      "acrLoginServer": {
+        "type": "string",
+        "value": "[reference(resourceId('Microsoft.ContainerRegistry/registries', parameters('acrName'))).loginServer]"
+      }
+    }
+  }
+  

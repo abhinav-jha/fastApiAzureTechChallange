@@ -1,0 +1,73 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "appGatewayName": {
+        "type": "string"
+      },
+      "location": {
+        "type": "string"
+      },
+      "subnetId": {
+        "type": "string"
+      },
+      "publicIPAddressId": {
+        "type": "string"
+      }
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Network/applicationGateways",
+        "apiVersion": "2021-05-01",
+        "name": "[parameters('appGatewayName')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "sku": {
+            "name": "WAF_v2",
+            "tier": "WAF_v2",
+            "capacity": 2
+          },
+          "gatewayIPConfigurations": [
+            {
+              "name": "appGatewayIpConfig",
+              "properties": {
+                "subnet": {
+                  "id": "[parameters('subnetId')]"
+                }
+              }
+            }
+          ],
+          "frontendIPConfigurations": [
+            {
+              "name": "appGatewayFrontendIP",
+              "properties": {
+                "publicIPAddress": {
+                  "id": "[parameters('publicIPAddressId')]"
+                }
+              }
+            }
+          ],
+          "frontendPorts": [
+            {
+              "name": "appGatewayFrontendPort",
+              "properties": {
+                "port": 80
+              }
+            }
+          ],
+          "backendAddressPools": [],
+          "backendHttpSettingsCollection": [],
+          "httpListeners": [],
+          "urlPathMaps": [],
+          "requestRoutingRules": [],
+          "webApplicationFirewallConfiguration": {
+            "enabled": true,
+            "firewallMode": "Prevention",
+            "ruleSetType": "OWASP",
+            "ruleSetVersion": "3.1"
+          }
+        }
+      }
+    ]
+  }
+  

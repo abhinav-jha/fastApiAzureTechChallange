@@ -1,0 +1,72 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "deploy-vnet-aks",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://azuretctemplates.blob.core.windows.net/tcarmtemplates/ARM_Templates/azuredeploy.aks.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "aksClusterName": { "value": "myAKSCluster" }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "deploy-acr",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://azuretctemplates.blob.core.windows.net/tcarmtemplates/ARM_Templates/azuredeploy.acr.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "acrName": { "value": "fastapiacr" }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "deploy-keyvault",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://azuretctemplates.blob.core.windows.net/tcarmtemplates/ARM_Templates/azure.keyVault.json",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "deploy-postgres",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://azuretctemplates.blob.core.windows.net/tcarmtemplates/ARM_Templates/azure-postgres-db-template.json",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "deploy-gateway",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://azuretctemplates.blob.core.windows.net/tcarmtemplates/ARM_Templates/app-gateway-waf-template.json",
+          "contentVersion": "1.0.0.0"
+        }
+      }
+    }
+  ]
+}

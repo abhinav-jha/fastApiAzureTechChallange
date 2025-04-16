@@ -1,0 +1,49 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vaultName": {
+        "type": "string"
+      },
+      "location": {
+        "type": "string"
+      },
+      "tenantId": {
+        "type": "string"
+      },
+      "objectId": {
+        "type": "string",
+        "metadata": {
+          "description": "Azure AD object ID of the principal to access the Key Vault (e.g., AKS SP or MI)"
+        }
+      }
+    },
+    "resources": [
+      {
+        "type": "Microsoft.KeyVault/vaults",
+        "apiVersion": "2021-10-01",
+        "name": "[parameters('vaultName')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "sku": {
+            "family": "A",
+            "name": "standard"
+          },
+          "tenantId": "[parameters('tenantId')]",
+          "accessPolicies": [
+            {
+              "tenantId": "[parameters('tenantId')]",
+              "objectId": "[parameters('objectId')]",
+              "permissions": {
+                "secrets": ["get", "list", "set", "delete"]
+              }
+            }
+          ],
+          "enabledForDeployment": true,
+          "enabledForTemplateDeployment": true,
+          "enabledForDiskEncryption": false
+        }
+      }
+    ]
+  }
+  
